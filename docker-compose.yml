@@ -1,0 +1,38 @@
+version: '3.7' 
+
+services:
+  laravel_db:
+    container_name: laravel_db
+    image: mysql:latest
+    volumes:
+      - ./mysql:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: laravel
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    networks:
+    - laravel_network
+
+  laravel:
+    container_name: laravel
+    build: 
+      context: .
+      args:
+        user: appuser
+        uid: 1000
+    depends_on:
+      - laravel_db
+    volumes:
+      - ./laravel:/var/www/html
+    restart: unless-stopped
+    ports:
+      - "8282:80"
+    networks:
+    - laravel_network
+
+networks:
+  laravel_network:
+    driver: bridge
+
